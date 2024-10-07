@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>챗봇 페이지</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        .left-section {
+            background-color: #f8d7da;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .right-section {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+        .chat-window {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .input-area {
+            display: flex;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .input-area button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-section">
+        <img src="nurse.png" alt="보미" style="width: 100px;">
+        <h2>보미</h2>
+        <p>임산부 건강 상담</p>
+    </div>
+    <div class="right-section">
+        <div class="chat-window" id="chat-window">
+            <p>보미에게 무엇을 물어보세요?</p>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="메시지를 입력하세요">
+            <button onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const userMessage = userInput.value.trim();
+            
+            if (userMessage) {
+                const userMessageElement = document.createElement('p');
+                userMessageElement.textContent = `사용자: ${userMessage}`;
+                chatWindow.appendChild(userMessageElement);
+                
+                const botMessageElement = document.createElement('p');
+                botMessageElement.textContent = `보미: 질문에 대한 답변입니다.`;
+                chatWindow.appendChild(botMessageElement);
+                
+                userInput.value = '';
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
