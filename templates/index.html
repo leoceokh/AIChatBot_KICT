@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오은영 박사 AI 상담소</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            height: calc(100vh - 220px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #7c3aed;
+            color: white;
+        }
+        .bot-message {
+            align-self: flex-start;
+            background-color: #e5e7eb;
+            color: black;
+        }
+        .input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: white;
+        }
+        .video-recommendations {
+            padding: 10px;
+            background-color: #f3f4f6;
+            border-radius: 10px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .message-content {
+            flex: 1;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .new-chat-btn {
+            background-color: #10B981;
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 h-full flex flex-col">
+        <h1 class="text-2xl font-bold mb-4 text-center text-purple-600">오은영 박사 AI 상담소</h1>
+        <div class="flex-grow overflow-hidden">
+            <div id="chat-container" class="chat-container bg-white rounded-lg shadow-md p-4 mb-4"></div>
+        </div>
+        <div id="video-recommendations" class="video-recommendations hidden"></div>
+        <div class="input-area">
+            <div class="input-group">
+                <button id="new-chat" class="new-chat-btn mr-2" title="새 대화 시작">+</button>
+                <form id="chat-form" class="flex flex-grow">
+                    <input type="text" id="user-input" class="flex-grow border rounded-l-full p-2" placeholder="메시지를 입력하세요...">
+                    <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-r-full">전송</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const videoRecommendationsContainer = document.getElementById('video-recommendations');
+        let isCounseling = true; // 항상 상담 모드로 설정
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            userInput.value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message, isCounseling }),
+            });
+
+            const data = await response.json();
+            addMessage('bot', data.response);
+            
+            if (data.videos && data.videos.length > 0) {
+                showVideoRecommendations(data.videos);
+            } else {
+                hideVideoRecommendations();
+            }
+        });
+
+        const newChatButton = document.getElementById('new-chat');
+
+        newChatButton.addEventListener('click', () => {
+            chatContainer.innerHTML = '';
+            hideVideoRecommendations();
+            addMessage('bot', '안녕하세요. 오은영 박사 AI 상담소입니다. 새로운 상담을 시작합니다. 어떤 고민이 있으신가요?');
+        });
+
+        function addMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            
+            let avatarHTML = '';
+            if (sender === 'bot') {
+                avatarHTML = '<img src="http://newsimg.hankookilbo.com/2018/05/30/201805301651086705_8.jpg" alt="오은영 박사" class="avatar">';
+            }
+            
+            messageElement.innerHTML = `
+                ${avatarHTML}
+                <div class="message-content">${message}</div>
+            `;
+            
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showVideoRecommendations(videos) {
+            videoRecommendationsContainer.innerHTML = '<h3 class="font-bold mb-2">관련 영상 추천:</h3>';
+            videos.forEach(video => {
+                const videoLink = document.createElement('a');
+                videoLink.href = `https://www.youtube.com/watch?v=${video.video_id}`;
+                videoLink.target = '_blank';
+                videoLink.textContent = video.title;
+                videoLink.classList.add('block', 'mb-1', 'text-blue-600', 'hover:underline');
+                videoRecommendationsContainer.appendChild(videoLink);
+            });
+            videoRecommendationsContainer.classList.remove('hidden');
+        }
+
+        function hideVideoRecommendations() {
+            videoRecommendationsContainer.classList.add('hidden');
+            videoRecommendationsContainer.innerHTML = '';
+        }
+
+        // 초기 메시지 추가
+        addMessage('bot', '안녕하세요. 오은영 박사 AI 상담소입니다. 어떤 고민이 있으신가요?');
+    </script>
+</body>
+</html>

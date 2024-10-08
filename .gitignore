@@ -1,0 +1,32 @@
+.env
+
+# Python 관련 파일
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 가상 환경
+venv/
+env/
+ENV/
+
+# Flask 관련 파일
+instance/
+.webassets-cache
+
+# 로그 파일
+*.log
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+
+# IDE 관련 파일
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 기타
+*.bak
+*.tmp
