@@ -53,5 +53,6 @@
 - `.env` 파일에 있는 API 키를 공개하지 않도록 주의해주세요.
 - `requirements.txt` 파일을 최신 상태로 유지해주세요.
 
+![image](https://github.com/user-attachments/assets/1540502b-3b12-47b2-9f75-86f11136f89c)
 
 
